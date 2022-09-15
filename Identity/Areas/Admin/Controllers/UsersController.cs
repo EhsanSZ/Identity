@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Identity.Areas.Admin.Models.Dto;
+using Identity.Areas.Admin.Models.Dto.Roles;
 using Identity.Models.Dto;
 using Identity.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Identity.Bugeto.Areas.Admin.Controllers
 {
@@ -16,9 +18,11 @@ namespace Identity.Bugeto.Areas.Admin.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<User> _userManager;
-        public UsersController(UserManager<User> userManager)
+        private readonly RoleManager<Role> _roleManager;
+        public UsersController(UserManager<User> userManager, RoleManager<Role> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public IActionResult Index()
@@ -152,6 +156,46 @@ namespace Identity.Bugeto.Areas.Admin.Controllers
             TempData["Message"] = message;
           
             return View(userDelete);
+        }
+
+        public IActionResult AddUserRole(string Id)
+        {
+
+            var user = _userManager.FindByIdAsync(Id).Result;
+
+            var roles = new List<SelectListItem>(
+                _roleManager.Roles.Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Name,
+                }
+                ).ToList());
+
+            return View(new AddUserRoleDto
+            {
+                Id = Id,
+                Roles = roles,
+                Email = user.Email,
+                FullName = $"{user.FirstName}  {user.LastName}"
+            });
+        }
+
+        [HttpPost]
+        public IActionResult AddUserRole(AddUserRoleDto newRole)
+        {
+            var user = _userManager.FindByIdAsync(newRole.Id).Result;
+            var result = _userManager.AddToRoleAsync(user, newRole.Role).Result;
+            return RedirectToAction("UserRoles", "Users", new { Id = user.Id, area = "admin" });
+        }
+
+        public IActionResult UserRoles(string Id)
+        {
+            var user = _userManager.FindByIdAsync(Id).Result;
+            var roles = _userManager.GetRolesAsync(user).Result;
+            ViewBag.UserInfo = $"Name : {user.FirstName } {user.LastName} Email:{user.Email}";
+            return View(roles);
+
+
         }
     }
 }
