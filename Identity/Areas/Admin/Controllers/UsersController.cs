@@ -96,7 +96,6 @@ namespace Identity.Bugeto.Areas.Admin.Controllers
 
         }
 
-
         [HttpPost]
         public IActionResult Edit(UserEditDto userEdit)
         {
@@ -194,7 +193,6 @@ namespace Identity.Bugeto.Areas.Admin.Controllers
             var roles = _userManager.GetRolesAsync(user).Result;
             ViewBag.UserInfo = $"Name : {user.FirstName } {user.LastName} Email:{user.Email}";
             return View(roles);
-
 
         }
     }

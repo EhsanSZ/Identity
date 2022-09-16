@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Identity.Models.Dto;
 using Identity.Models.Entities;
+using Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,13 @@ namespace Identity.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly EmailService _emailService;
         public AccountController(UserManager<User> userManager, 
             SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = new EmailService();
         }
         public IActionResult Index()
         {
@@ -45,9 +48,20 @@ namespace Identity.Controllers
             };
 
            var result= _userManager.CreateAsync(newUser, register.Password).Result;
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                var token = _userManager.GenerateEmailConfirmationTokenAsync(newUser).Result;
+                string callbackUrl = Url.Action("ConfirmEmail", "Account", new
+                {
+                    UserId = newUser.Id
+                ,
+                    token = token
+                }, protocol: Request.Scheme);
+
+                string body = $"لطفا برای فعال حساب کاربری بر روی لینک زیر کلیک کنید!  <br/> <a href={callbackUrl}> Link </a>";
+                _emailService.Execute(newUser.Email, body, "فعال سازی حساب کاربری ");
+
+                return RedirectToAction("DisplayEmail");
             }
 
             string message="";
@@ -57,6 +71,35 @@ namespace Identity.Controllers
             }
             TempData["Message"] = message;
             return View(register);
+        }
+
+        public IActionResult ConfirmEmail(string UserId, string Token)
+        {
+            if (UserId == null || Token == null)
+            {
+                return BadRequest();
+            }
+            var user = _userManager.FindByIdAsync(UserId).Result;
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            var result = _userManager.ConfirmEmailAsync(user, Token).Result;
+            if (result.Succeeded)
+            {
+                /// return 
+            }
+            else
+            {
+
+            }
+            return RedirectToAction("login");
+
+        }
+        public IActionResult DisplayEmail()
+        {
+            return View();
         }
 
         [HttpGet]
