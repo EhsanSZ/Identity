@@ -6,6 +6,7 @@ using Identity.Models.Dto;
 using Identity.Models.Dto.Account;
 using Identity.Models.Entities;
 using Identity.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,10 +24,8 @@ namespace Identity.Controllers
             _signInManager = signInManager;
             _emailService = new EmailService();
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
+
+
 
         public IActionResult Register()
         {
@@ -145,12 +144,12 @@ namespace Identity.Controllers
             return View();
         }
 
-
         public IActionResult LogOut()
         {
             _signInManager.SignOutAsync();
             return RedirectToAction("Index", "home");
         }
+
 
         public IActionResult ForgotPassword()
         {
@@ -224,6 +223,60 @@ namespace Identity.Controllers
         }
 
         public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        [Authorize]
+        public IActionResult SetPhoneNumber()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult SetPhoneNumber(SetPhoneNumberDto phoneNumberDro)
+        {
+            var user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+            var setResult = _userManager.SetPhoneNumberAsync(user, phoneNumberDro.PhoneNumber).Result;
+            string code = _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumberDro.PhoneNumber).Result;
+            SmsService smsService = new SmsService();
+            smsService.Send(phoneNumberDro.PhoneNumber, code);
+            TempData["PhoneNumber"] = phoneNumberDro.PhoneNumber;
+            return RedirectToAction(nameof(VerifyPhoneNumber));
+        }
+
+        [Authorize]
+        public IActionResult VerifyPhoneNumber()
+        {
+            return View(new VerifyPhoneNumberDto
+            {
+                PhoneNumber = TempData["PhoneNumber"].ToString(),
+            });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult VerifyPhoneNumber(VerifyPhoneNumberDto verify)
+        {
+            var user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+            bool resultVerify = _userManager.VerifyChangePhoneNumberTokenAsync
+                (user, verify.Code, verify.PhoneNumber).Result;
+            if (resultVerify == false)
+            {
+                ViewData["Message"] = $"کد وارد شده برای شماره {verify.PhoneNumber} اشتباه اشت";
+                return View(verify);
+            }
+            else
+            {
+                user.PhoneNumberConfirmed = true;
+                _userManager.UpdateAsync(user);
+            }
+            return RedirectToAction("VerifySuccess");
+        }
+
+        public IActionResult VerifySuccess()
         {
             return View();
         }

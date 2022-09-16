@@ -29,9 +29,9 @@ namespace Identity
         {
             
 
-            services.AddDbContext<DataBaseContext>(
-              p => p.UseSqlServer
-             ("Data Source=.;Initial Catalog=identitydb;Integrated Security=True;MultipleActiveResultSets=true"));
+           // services.AddDbContext<DataBaseContext>(
+             // p => p.UseSqlServer
+            // ("Data Source=.;Initial Catalog=identitydb;Integrated Security=True;MultipleActiveResultSets=true"));
 
 
             services.AddIdentity<User, Role>()
