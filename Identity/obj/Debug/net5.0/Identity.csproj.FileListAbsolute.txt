@@ -93,3 +93,5 @@ D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Identity.genruntimeco
 D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\SetPhoneNumber.cshtml.g.cs
 D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\VerifyPhoneNumber.cshtml.g.cs
 D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\VerifySuccess.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\Index.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\TwoFactorLogin.cshtml.g.cs

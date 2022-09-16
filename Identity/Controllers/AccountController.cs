@@ -25,6 +25,31 @@ namespace Identity.Controllers
             _emailService = new EmailService();
         }
 
+        [Authorize]
+        public IActionResult Index()
+        {
+            var user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+            MyAccountinfoDto myAccount = new MyAccountinfoDto()
+            {
+                Email = user.Email,
+                EmailConfirmed = user.EmailConfirmed,
+                FullName = $"{user.FirstName} {user.LastName}",
+                Id = user.Id,
+                PhoneNumber = user.PhoneNumber,
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                UserName = user.UserName,
+            };
+            return View(myAccount);
+        }
+
+        [Authorize]
+        public IActionResult TwoFactorEnabled()
+        {
+            var user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+            var Result = _userManager.SetTwoFactorEnabledAsync(user, !user.TwoFactorEnabled).Result;
+            return RedirectToAction(nameof(Index));
+        }
 
 
         public IActionResult Register()
@@ -133,7 +158,7 @@ namespace Identity.Controllers
             }
             if(result.RequiresTwoFactor ==true)
             {
-                //
+                return RedirectToAction("TwoFactorLogin", new { login.UserName, login.IsPersistent });
             } 
             if(result.IsLockedOut)
             {
@@ -142,6 +167,73 @@ namespace Identity.Controllers
            
             ModelState.AddModelError(string.Empty, "Login  Error");
             return View();
+        }
+
+        public IActionResult TwoFactorLogin(string UserName, bool IsPersistent)
+        {
+            var user = _userManager.FindByNameAsync(UserName).Result;
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var providers = _userManager.GetValidTwoFactorProvidersAsync(user).Result;
+
+            TwoFactorLoginDto model = new TwoFactorLoginDto();
+            if (providers.Contains("Phone"))
+            {
+                string smsCode = _userManager.GenerateTwoFactorTokenAsync(user, "Phone").Result;
+
+                SmsService smsService = new SmsService();
+                smsService.Send(user.PhoneNumber, smsCode);
+                model.Provider = "Phone";
+                model.IsPersistent = IsPersistent;
+            }
+            else if (providers.Contains("Email"))
+            {
+                string emailCode = _userManager.GenerateTwoFactorTokenAsync(user, "Email").Result;
+                EmailService emailService = new EmailService();
+                emailService.Execute(user.Email, $"Two Factor Code:{emailCode}", "Two Factor Login");
+
+                model.Provider = "Email";
+                model.IsPersistent = IsPersistent;
+            }
+
+            return View(model);
+
+        }
+
+        [HttpPost]
+        public IActionResult TwoFactorLogin(TwoFactorLoginDto twoFactor)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(twoFactor);
+            }
+            var user = _signInManager.GetTwoFactorAuthenticationUserAsync().Result;
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var result = _signInManager.TwoFactorSignInAsync
+                (twoFactor.Provider, twoFactor.Code, twoFactor.IsPersistent, false).Result;
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("index");
+            }
+            else if (result.IsLockedOut)
+            {
+                ModelState.AddModelError("", "حساب کاربری شما قفل شده است");
+                return View();
+            }
+            else
+            {
+                ModelState.AddModelError("", "کد وارد شده صحیح نیست ");
+                return View();
+            }
         }
 
         public IActionResult LogOut()
