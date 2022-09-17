@@ -38,7 +38,8 @@ namespace Identity
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DataBaseContext>()
                 .AddDefaultTokenProviders()
-                .AddErrorDescriber<CustomIdentityError>();
+                .AddErrorDescriber<CustomIdentityError>()
+                .AddPasswordValidator<MyPasswordValidator>();
 
             services.Configure<IdentityOptions>(option =>
             {
@@ -75,6 +76,8 @@ namespace Identity
                 option.AccessDeniedPath = "/Account/AccessDenied";
                 option.SlidingExpiration = true;
             });
+
+            services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
 
         }
 
