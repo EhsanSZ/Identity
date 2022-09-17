@@ -1,6 +1,7 @@
 using Identity.Data;
 using Identity.Helpers;
 using Identity.Models.Entities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -38,6 +39,7 @@ namespace Identity
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DataBaseContext>()
                 .AddDefaultTokenProviders()
+                .AddRoles<Role>()
                 .AddErrorDescriber<CustomIdentityError>()
                 .AddPasswordValidator<MyPasswordValidator>();
 
@@ -77,7 +79,8 @@ namespace Identity
                 option.SlidingExpiration = true;
             });
 
-            services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
+            //services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
+            services.AddScoped<IClaimsTransformation, AddClaim>();
 
         }
 
