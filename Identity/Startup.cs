@@ -1,4 +1,5 @@
 using Identity.Data;
+using Identity.Helpers;
 using Identity.Models.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +37,44 @@ namespace Identity
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DataBaseContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddErrorDescriber<CustomIdentityError>();
+
+            services.Configure<IdentityOptions>(option =>
+            {
+                //UserSetting
+                //option.User.AllowedUserNameCharacters = "abcd123";
+                option.User.RequireUniqueEmail = true;
+
+                //Password Setting
+                option.Password.RequireDigit = false;
+                option.Password.RequireLowercase = false;
+                option.Password.RequireNonAlphanumeric = false;//!@#$%^&*()_+
+                option.Password.RequireUppercase = false;
+                option.Password.RequiredLength = 8;
+                option.Password.RequiredUniqueChars = 1;
+
+                //Lokout Setting
+                option.Lockout.MaxFailedAccessAttempts = 3;
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMilliseconds(10);
+
+                //SignIn Setting
+                option.SignIn.RequireConfirmedAccount = false;
+                option.SignIn.RequireConfirmedEmail = false;
+                option.SignIn.RequireConfirmedPhoneNumber = false;
+
+            });
+
+
+            services.ConfigureApplicationCookie(option =>
+            {
+                // cookie setting
+                option.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+
+                option.LoginPath = "/account/login";
+                option.AccessDeniedPath = "/Account/AccessDenied";
+                option.SlidingExpiration = true;
+            });
 
         }
 
