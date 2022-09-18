@@ -95,3 +95,8 @@ D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\V
 D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\VerifySuccess.cshtml.g.cs
 D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\Index.cshtml.g.cs
 D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Account\TwoFactorLogin.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Blog\Create.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Blog\Edit.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\Blog\Index.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\UserClaim\Create.cshtml.g.cs
+D:\MyProje\ASP.Net\Auth\Identity\Identity\obj\Debug\net5.0\Razor\Views\UserClaim\Index.cshtml.g.cs

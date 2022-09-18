@@ -83,6 +83,11 @@ namespace Identity
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy("AdminUsers", policy =>
+                {
+                    policy.RequireRole("Admin");
+                });
+
                 options.AddPolicy("Buyer", policy =>
                 {
                     policy.RequireClaim("Buyer");
