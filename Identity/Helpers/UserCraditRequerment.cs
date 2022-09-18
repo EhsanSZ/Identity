@@ -18,7 +18,8 @@ namespace Identity.Helpers
 
     public class UserCreditHandler : AuthorizationHandler<UserCreditRequerment>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserCreditRequerment requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext
+         context, UserCreditRequerment requirement)
         {
             var claim= context.User.FindFirst("Cradit");
             if(claim !=null)

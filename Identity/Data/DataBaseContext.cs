@@ -13,11 +13,12 @@ namespace Identity.Data
     //https://github.com/aspnet/AspNetIdentity/blob/master/src/Microsoft.AspNet.Identity.EntityFramework/IdentityDbContext.cs
     public class DataBaseContext : IdentityDbContext<User, Role, string>
     {
-        //public DataBaseContext(DbContextOptions<DataBaseContext> options)
-        //    : base(options)
-        //{
-        //}
+        public DataBaseContext(DbContextOptions<DataBaseContext> options)
+            : base(options)
+        {
+        }
 
+        public DbSet<Blog> Blogs { get; set; }
 
     }
 }

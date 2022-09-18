@@ -1,3 +1,4 @@
+using Identity.Helpers;
 using Identity.Data;
 using Identity.Helpers;
 using Identity.Models.Entities;
@@ -80,11 +81,6 @@ namespace Identity
                 option.SlidingExpiration = true;
             });
 
-            //services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
-            services.AddScoped<IClaimsTransformation, AddClaim>();
-            services.AddSingleton<IAuthorizationHandler, UserCreditHandler>();
-
-
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Buyer", policy =>
@@ -96,7 +92,20 @@ namespace Identity
                     policy.RequireClaim("Blood", "Ap", "Op");
                 }
                 );
+                options.AddPolicy("Cradit", policy =>
+                {
+                    policy.Requirements.Add(new UserCreditRequerment(10000));
+                });
+                options.AddPolicy("IsBlogForUser", policy =>
+                {
+                    policy.AddRequirements(new BlogRequirement());
+                });
             });
+
+            //services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
+            services.AddScoped<IClaimsTransformation, AddClaim>();
+            services.AddSingleton<IAuthorizationHandler, UserCreditHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsBlogForUserAuthorizationHandler>();
 
         }
 
