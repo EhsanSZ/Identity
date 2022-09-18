@@ -2,6 +2,7 @@ using Identity.Data;
 using Identity.Helpers;
 using Identity.Models.Entities;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -81,6 +82,7 @@ namespace Identity
 
             //services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
             services.AddScoped<IClaimsTransformation, AddClaim>();
+            services.AddSingleton<IAuthorizationHandler, UserCreditHandler>();
 
 
             services.AddAuthorization(options =>
