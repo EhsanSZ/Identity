@@ -1,4 +1,5 @@
 ﻿using Identity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,6 +33,18 @@ namespace Identity.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Authorize(Policy = "Buyer")]
+        public string JustBuyer()
+        {
+            return "شما خریدار هستید";
+        }
+
+        [Authorize(Policy = "BloodType")]
+        public string Blood()
+        {
+            return "Ap and O";
         }
     }
 }

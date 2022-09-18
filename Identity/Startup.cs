@@ -82,6 +82,20 @@ namespace Identity
             //services.AddScoped<IUserClaimsPrincipalFactory<User>, AddMyClaims>();
             services.AddScoped<IClaimsTransformation, AddClaim>();
 
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Buyer", policy =>
+                {
+                    policy.RequireClaim("Buyer");
+                });
+                options.AddPolicy("BloodType", policy =>
+                {
+                    policy.RequireClaim("Blood", "Ap", "Op");
+                }
+                );
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
