@@ -31,12 +31,18 @@ namespace Identity
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
 
-           // services.AddDbContext<DataBaseContext>(
-             // p => p.UseSqlServer
+
+            // services.AddDbContext<DataBaseContext>(
+            // p => p.UseSqlServer
             // ("Data Source=.;Initial Catalog=identitydb;Integrated Security=True;MultipleActiveResultSets=true"));
-
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = "";
+                    options.ClientSecret = "";
+                }
+                );
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<DataBaseContext>()
